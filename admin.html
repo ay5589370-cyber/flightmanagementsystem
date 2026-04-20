@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+</head>
+<body>
+
+<h2>Admin - Add Flight</h2>
+
+<input type="text" id="name" placeholder="Flight Name"><br><br>
+<input type="text" id="from" placeholder="From"><br><br>
+<input type="text" id="to" placeholder="To"><br><br>
+<input type="number" id="price" placeholder="Price"><br><br>
+
+<button onclick="addFlight()">Add Flight</button>
+
+<p id="msg"></p>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc } 
+from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+window.addFlight = async function () {
+  const name = document.getElementById("name").value;
+  const from = document.getElementById("from").value;
+  const to = document.getElementById("to").value;
+  const price = document.getElementById("price").value;
+
+  try {
+    await addDoc(collection(db, "flights"), {
+      flightName: name,
+      from: from,
+      to: to,
+      price: price
+    });
+
+    document.getElementById("msg").innerText = "Flight Added!";
+  } catch (err) {
+    document.getElementById("msg").innerText = err.message;
+  }
+};
+</script>
+
+</body>
+</html>

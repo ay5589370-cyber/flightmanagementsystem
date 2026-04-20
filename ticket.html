@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check Ticket</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2>Check Ticket</h2>
+
+<input type="text" id="tid" placeholder="Enter Ticket ID">
+<br>
+<button onclick="checkTicket()">Check</button>
+
+<div id="result"></div>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, getDocs } 
+from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+window.checkTicket = async function () {
+  const tid = document.getElementById("tid").value;
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const snapshot = await getDocs(collection(db, "bookings"));
+
+  let found = false;
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    if (data.ticketId === tid) {
+      found = true;
+
+      resultDiv.innerHTML = `
+        <div class="card">
+          <h3>${data.name}</h3>
+          <p>${data.from} → ${data.to}</p>
+          <p>Flight: ${data.name}</p>
+          <p>Seat: ${data.seat}</p>
+          <p>Ticket ID: ${data.ticketId}</p>
+        </div>
+      `;
+    }
+  });
+
+  if (!found) {
+    resultDiv.innerHTML = "<p>Ticket Not Found</p>";
+  }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Flight</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2>Search Flight</h2>
+
+<input type="text" id="from" placeholder="Enter From City">
+<br>
+<button onclick="searchFlight()">Search</button>
+
+<div id="result"></div>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, getDocs } 
+from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+window.searchFlight = async function () {
+  const fromCity = document.getElementById("from").value.toLowerCase();
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "flights"));
+
+  let found = false;
+
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+
+    if (data.from.toLowerCase() === fromCity) {
+      found = true;
+
+      resultDiv.innerHTML += `
+        <div class="card">
+          <h3>${data.flightName}</h3>
+          <p>${data.from} → ${data.to}</p>
+          <p>₹${data.price}</p>
+          <button onclick="book('${data.flightName}','${data.from}','${data.to}','${data.price}')">
+            Book
+          </button>
+        </div>
+      `;
+    }
+  });
+
+  if (!found) {
+    resultDiv.innerHTML = "<p>Flight Not Found</p>";
+  }
+};
+
+window.book = function(name, from, to, price) {
+  localStorage.setItem("flight", JSON.stringify({name, from, to, price}));
+  window.location.href = "booking.html";
+};
+</script>
+
+</body>
+</html>

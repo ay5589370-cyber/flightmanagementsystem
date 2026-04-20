@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Booking</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2>Book Ticket</h2>
+
+<input type="text" id="name" placeholder="Your Name"><br>
+<input type="text" id="phone" placeholder="Phone"><br>
+<input type="email" id="email" placeholder="Email"><br>
+<input type="text" id="seat" placeholder="Seat No"><br>
+
+<button onclick="bookTicket()">Book Now</button>
+
+<p id="msg"></p>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc } 
+from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+function generateTicketId() {
+  return "TID" + Math.floor(Math.random() * 1000000);
+}
+
+window.bookTicket = async function () {
+  const userData = {
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    seat: document.getElementById("seat").value
+  };
+
+  const flight = JSON.parse(localStorage.getItem("flight"));
+
+  if (!flight) {
+    document.getElementById("msg").innerText = "Flight Not Found";
+    return;
+  }
+
+  const ticketId = generateTicketId();
+
+  await addDoc(collection(db, "bookings"), {
+    ...userData,
+    ...flight,
+    ticketId: ticketId
+  });
+
+  document.getElementById("msg").innerText = "Booking Done! Ticket ID: " + ticketId;
+};
+</script>
+
+</body>
+</html>
